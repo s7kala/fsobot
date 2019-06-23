@@ -31,4 +31,20 @@ module.exports = (client, message) => {
 	if(message.content === '~leave') {
 		return leave(message);
 	}
+	const serverQueue = queue.get(message.guild.id);
+	// Play
+	const play = require('../commands/play');
+	if(message.content.startsWith('~play')) {
+		return play(message, serverQueue);
+	}
+	// Skip
+	const skip = require('../commands/skip');
+	if(message.content === '~skip') {
+		return skip(message, serverQueue);
+	}
+	// Stop
+	const stop = require('../commands/stop');
+	if(message.content === '~stop') {
+		return stop(message, serverQueue);
+	}
 }
