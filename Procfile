@@ -1,1 +1,2 @@
-worker: nodemon fsobot.js
+worker: npm install
+        node fsobot.js
