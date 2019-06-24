@@ -1,7 +1,12 @@
-const fs = require('fs');
+// const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const queue = new Map();
+client.music = require("discord.js-musicbot-addon");
+client.music.start(client, {
+	youtubeKey: process.env.YT_KEY
+});
+client.login(process.env.BOT_TOKEN);
+// const queue = new Map();
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
@@ -76,102 +81,30 @@ client.on('message', message => {
 		}
 	}
 	// Music
-	const serverQueue = queue.get(message.guild.id);
-	const ytdl = require('ytdl-core');
-	if (message.content.startsWith('~play')) {
-		execute(message, serverQueue);
-		return;
-	} else if (message.content.startsWith('~skip')) {
-	skip(message, serverQueue);
-	return;
-	} else if (message.content.startsWith('~stop')) {
-	stop(message, serverQueue);
-	return;
+	if(message.content.startsWith('~play')) {
+		const song = message.content.slice(5);
+		message.client.music.bot.playFunction(message, song);
+	} else if(message.content === '~np') {
+		message.client.music.bot.npFunction(message, '');
+	} else if(message.content === '~q') {
+		message.client.music.bot.queueFunction(message, '');
+	} else if(message.content === '~loop') {
+		message.client.music.bot.loopFunction(message, '');
+	} else if(message.content === '~pause') {
+		message.client.music.bot.pauseFunction(message, '');
+	} else if(message.content === '~resume') {
+		message.client.music.bot.resumeFunction(message, '');
+	} else if(message.content.startsWith('~search')) {
+		const query = message.content.slice(7);
+		message.client.music.bot.searchFunction(message, query);
+	} else if(message.content === '~clearq') {
+		message.client.music.bot.clearFunction();
 	}
-	async function execute(message, serverQueue) {
-	const args = message.content.split(' ');
-
-	const voiceChannel = message.member.voiceChannel;
-	if (!voiceChannel) return message.channel.send('You need to be in a voice channel to play music!');
 	
-	const permissions = voiceChannel.permissionsFor(message.client.user);
-	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
-		return message.channel.send('I need the permissions to join and speak in your voice channel!');
-	}
+	});
+	
 
-	const songInfo = await ytdl.getInfo(args[1]);
-	const song = {
-		title: songInfo.title,
-		url: songInfo.video_url,
-	};
-
-	if (!serverQueue) {
-		const queueContruct = {
-			textChannel: message.channel,
-			voiceChannel: voiceChannel,
-			connection: null,
-			songs: [],
-			volume: 5,
-			playing: true,
-		};
-
-		queue.set(message.guild.id, queueContruct);
-
-		queueContruct.songs.push(song);
-
-		try {
-			var connection = await voiceChannel.join();
-			queueContruct.connection = connection;
-			play(message.guild, queueContruct.songs[0]);
-		} catch (err) {
-			console.log(err);
-			queue.delete(message.guild.id);
-			return message.channel.send(err);
-		}
-	} else {
-		serverQueue.songs.push(song);
-		console.log(serverQueue.songs);
-		return message.channel.send(`${song.title} has been added to the queue!`);
-		}
-	}
-
-	function skip(message, serverQueue) {
-		if (!message.member.voiceChannel) return message.channel.send('You have to be in a voice channel to stop the music!');
-		if (!serverQueue) return message.channel.send('There is no song that I could skip!');
-		message.channel.send('Skipping...');
-		serverQueue.connection.dispatcher.end();
-	}
-
-	function stop(message, serverQueue) {
-		if (!message.member.voiceChannel) return message.channel.send('You have to be in a voice channel to stop the music!');
-		if (!serverQueue) return message.channel.send('There is nothing to stop .-.');
-		serverQueue.songs = [];
-		serverQueue.connection.dispatcher.end();
-	}
-
-	function play(guild, song) {
-		const serverQueue = queue.get(guild.id);
-
-		if (!song) {
-			queue.delete(guild.id);
-			return;
-	}
-		message.channel.send(`Playing ${song.title} as requested by ${message.author}`);
-		const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
-			.on('end', () => {
-				console.log('Music ended!');
-				serverQueue.songs.shift();
-				play(guild, serverQueue.songs[0]);
-			})
-			.on('error', error => {
-				console.error(error);
-			});
-		dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-	}
-  })
-
-
-
+// For modularization
 /*
 fs.readdir('./events/', (err, files) => {
 	files.forEach(file => {
@@ -182,4 +115,3 @@ fs.readdir('./events/', (err, files) => {
 });
 */
 
-client.login(process.env.BOT_TOKEN);
