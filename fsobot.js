@@ -153,7 +153,6 @@ client.on('message', message => {
 		const serverQueue = queue.get(guild.id);
 
 		if (!song) {
-			serverQueue.voiceChannel.leave();
 			queue.delete(guild.id);
 			return;
 	}
