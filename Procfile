@@ -1,1 +1,1 @@
-worker: node fsobot.js
+worker: nodemon fsobot.js
