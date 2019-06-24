@@ -183,4 +183,4 @@ fs.readdir('./events/', (err, files) => {
 });
 */
 
-client.login('NTkyNDQyMjM1NTMxMDM0NjM0.XRCTmg.XlboghGZKt-39Njdt-uuFR7HH4Y');
+client.login(process.env.BOT_TOKEN);
