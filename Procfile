@@ -1,2 +1,1 @@
-worker: npm install
-        node fsobot.js
+worker: npm install && node fsobot.js
