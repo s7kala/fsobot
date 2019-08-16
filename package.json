@@ -8,11 +8,15 @@
   },
   "dependencies": {
     "discord.js": "^11.5.1",
-    "dotenv": "^8.0.0",
+    "discord.js-musicbot-addon": "^13.6.0",
     "ffmpeg-binaries": "^4.0.0",
     "node-opus": "^0.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
-  }
+  },
+  "description": "A Minimal Discord Bot",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
